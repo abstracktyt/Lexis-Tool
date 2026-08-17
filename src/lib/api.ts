@@ -1,1 +1,0 @@
-export const API_BASE = 'https://d6b463b1-1a63-443e-9cb2-071f448668c6-00-3r861pz7cllyr.worf.replit.dev';
