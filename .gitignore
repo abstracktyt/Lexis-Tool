@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+release-installer/
+installer/app/
+installer/node_modules/
+build/
+.opencode/
+openwork-inbox/
+*.log
+.DS_Store
+.vscode/
+.idea/

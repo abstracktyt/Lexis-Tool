@@ -1,0 +1,80 @@
+{
+  "name": "lexis-tools",
+  "private": true,
+  "version": "1.1.1",
+  "description": "Lexis Tools — набор админ-инструментов для игрового сервера",
+  "author": "Lexis Tools",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@nut-tree-fork/nut-js": "^4.2.1",
+    "discord-rpc": "^4.0.1",
+    "electron-updater": "^6.8.9",
+    "lucide-react": "^0.428.0",
+    "ogl": "^1.0.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/discord-rpc": "^4.0.11",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "electron": "^32.0.1",
+    "electron-builder": "^24.13.3",
+    "javascript-obfuscator": "^5.5.0",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "vite-plugin-electron": "^0.28.7",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vite-plugin-javascript-obfuscator": "^3.1.0"
+  },
+  "build": {
+    "appId": "com.lexistools.app",
+    "productName": "Lexis Tools",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "public/icon.png",
+      "requestedExecutionLevel": "highestAvailable",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Lexis Tools",
+      "language": "1049",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/header.ico",
+      "installerSidebar": "build/sidebar.bmp",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "abstracktyt",
+      "repo": "Lexis-Tool"
+    },
+    "files": [
+      "dist",
+      "dist-electron",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "public/**/*",
+      "build/**/*"
+    ]
+  }
+}

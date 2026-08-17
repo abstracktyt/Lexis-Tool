@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>Lexis Tools Installer</title>
+<style>
+  :root { --bg:#0b0d12; --bg2:#12151c; --accent:#5b7c9e; --accent2:#7b98b8; --text:#e7e9ec; --muted:#8a919b; --ok:#22c55e; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; }
+  body { font-family: Inter, 'Segoe UI', system-ui, sans-serif; background:linear-gradient(160deg,#151a23 0%,var(--bg) 55%,#07080b 100%); color:var(--text); user-select:none; overflow:hidden; }
+  .bg-anim { position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:linear-gradient(120deg, rgba(91,124,158,0.32) 0%, rgba(123,152,184,0) 30%, rgba(91,124,158,0.26) 55%, rgba(123,152,184,0.14) 80%, rgba(91,124,158,0.3) 100%);
+    background-size:300% 300%;
+    animation:gradShift 11s ease-in-out infinite;
+  }
+  @keyframes gradShift { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+  #rootUI { position:relative; z-index:1; height:100%; }
+  #titlebar { height:38px; display:flex; align-items:center; padding:0 10px 0 16px; -webkit-app-region:drag; }
+  #titlebar .t { font-size:12px; color:var(--muted); letter-spacing:.4px; }
+  #titlebar .btns { margin-left:auto; -webkit-app-region:no-drag; display:flex; gap:4px; }
+  #titlebar button { width:30px; height:24px; border:none; background:transparent; color:var(--muted); border-radius:6px; cursor:pointer; font-size:12px; }
+  #titlebar button:hover { background:rgba(255,255,255,.08); color:#fff; }
+  #titlebar .close:hover { background:rgba(239,68,68,.2); color:#ff6b6b; }
+  .page { position:absolute; inset:38px 0 0 0; padding:26px 34px; display:none; flex-direction:column; z-index:2; }
+  .page.active { display:flex; }
+  .logo { width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg,var(--accent) 20%,var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; margin-bottom:16px; box-shadow:0 12px 30px -10px rgba(91,124,158,.5); }
+  h1 { font-size:22px; font-weight:800; margin-bottom:6px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:22px; line-height:1.5; }
+  .dir-row { display:flex; align-items:center; gap:10px; background:var(--bg2); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:10px 12px; margin-bottom:22px; }
+  .dir-row input { flex:1; background:transparent; border:none; color:var(--text); font-size:13px; outline:none; }
+  .btn { padding:11px 22px; border:none; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; transition:all .2s; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); box-shadow:0 8px 20px -8px rgba(91,124,158,.6); }
+  .btn-ghost { background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.14); }
+  .btn-ghost:hover { color:#fff; border-color:rgba(255,255,255,.3); }
+  .footer { margin-top:auto; display:flex; gap:10px; justify-content:flex-end; padding-top:14px; }
+  .bar { height:12px; background:#10141b; border:1px solid rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+  .bar > div { height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .25s ease; }
+  .bar-row { display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; color:var(--muted); }
+  .install-status { font-size:13px; color:var(--muted); margin-bottom:14px; }
+  .done { color:var(--ok); font-size:34px; font-weight:800; margin-bottom:10px; }
+  .spin { width:22px; height:22px; border:3px solid rgba(255,255,255,.15); border-top-color:var(--accent2); border-radius:50%; animation:sp .8s linear infinite; margin-right:10px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+  .loading-row { display:flex; align-items:center; }
+</style>
+</head>
+<body>
+  <div class="bg-anim"></div>
+  <div id="titlebar">
+    <span class="t">Lexis Tools Installer</span>
+    <div class="btns">
+      <button onclick="window.installer.windowMinimize()">&#8211;</button>
+      <button class="close" onclick="window.installer.windowClose()">&#10005;</button>
+    </div>
+  </div>
+
+  <div class="page active" id="p-welcome">
+    <div class="logo">L</div>
+    <h1 id="w-title">Установка Lexis Tools</h1>
+    <div class="sub" id="w-sub">Кастомный установщик. Выберите папку и нажмите «Установить».</div>
+    <div class="dir-row">
+      <input id="dir" readonly />
+      <button class="btn btn-ghost" id="btn-dir">Изменить</button>
+    </div>
+    <div class="footer">
+      <button class="btn btn-ghost" id="btn-close">Закрыть</button>
+      <button class="btn btn-primary" id="btn-install">Установить</button>
+    </div>
+  </div>
+
+  <div class="page" id="p-install">
+    <div class="loading-row"><span class="spin"></span><h1>Установка…</h1></div>
+    <div class="install-status" id="st-status">Подготовка файлов…</div>
+    <div class="bar-row"><span>Копирование файлов</span><span id="pct">0%</span></div>
+    <div class="bar"><div id="bar-fill"></div></div>
+  </div>
+
+  <div class="page" id="p-finish">
+    <div class="done">✓</div>
+    <h1>Готово!</h1>
+    <div class="sub" id="fin-sub">Lexis Tools установлен. Запускайте и пользуйтесь.</div>
+    <div class="footer">
+      <button class="btn btn-ghost" id="btn-close2">Готово</button>
+      <button class="btn btn-primary" id="btn-run">Запустить Lexis Tools</button>
+    </div>
+  </div>
+
+<script>
+  const R = window.installer;
+  let installDir = null;
+  let defaultDir = null;
+  let installedDir = null;
+
+  function el(id) { return document.getElementById(id); }
+  function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    el(id).classList.add('active');
+  }
+
+  if (!R) {
+    el('w-sub').textContent = 'Ошибка: окружение установщика не загружено.';
+    return;
+  }
+
+  R.onProgress(p => {
+    const pct = Math.min(100, Math.round(p));
+    el('bar-fill').style.width = pct + '%';
+    el('pct').textContent = pct + '%';
+    if (pct >= 100) el('st-status').textContent = 'Создание ярлыков и регистрация…';
+  });
+
+  R.getInfo().then(info => {
+    el('w-title').textContent = 'Установка ' + info.productName;
+    el('w-sub').textContent = 'Версия ' + info.version + ' · ~' + info.sizeMB + ' МБ · Кастомный установщик.';
+    installDir = info.defaultDir;
+    defaultDir = info.defaultDir;
+    el('dir').value = info.defaultDir;
+  }).catch(e => { el('w-sub').textContent = 'Ошибка загрузки: ' + e; });
+
+  el('btn-dir').onclick = async () => {
+    try {
+      const d = await R.chooseDir();
+      if (d) { installDir = d; el('dir').value = d; }
+    } catch (e) { el('w-sub').textContent = 'Не удалось выбрать папку: ' + e; }
+  };
+
+  el('btn-close').onclick = () => R.windowClose();
+  el('btn-close2').onclick = () => R.windowClose();
+
+  el('btn-install').onclick = async () => {
+    const dir = (el('dir').value && el('dir').value.trim()) || defaultDir || installDir;
+    el('st-status').textContent = 'Копирование файлов…';
+    el('bar-fill').style.width = '0%';
+    el('pct').textContent = '0%';
+    show('p-install');
+    try {
+      const res = await R.install(dir);
+      if (res && res.ok) {
+        installedDir = res.dir;
+        el('fin-sub').textContent = 'Установлено в: ' + res.dir + '\nLexis Tools готов к работе.';
+        show('p-finish');
+      } else {
+        el('st-status').textContent = 'Ошибка: ' + ((res && res.error) || 'неизвестная ошибка');
+      }
+    } catch (e) {
+      el('st-status').textContent = 'Ошибка: ' + e;
+    }
+  };
+
+  el('btn-run').onclick = () => {
+    if (installedDir) R.launch(installedDir);
+    R.windowClose();
+  };
+</script>
+</body>
+</html>

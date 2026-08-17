@@ -1,0 +1,24 @@
+.echo-text {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+  line-height: 1;
+}
+
+.echo-text__echo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.echo-text__echo--front {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .echo-text__echo:not(.echo-text__echo--front) {
+    display: none;
+  }
+}
