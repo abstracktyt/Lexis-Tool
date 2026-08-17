@@ -37,4 +37,4 @@
 ## 💬 Поддержка
 
 По вопросам и предложениям — пишите в наш Discord: **dsc.gg/lexis**.
-В разработке участвуют: abstracktyt, strangerzv, __emikor__.
+В разработке участвуют: abstracktyt, strangerzv, @_emikor_.
